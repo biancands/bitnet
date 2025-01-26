@@ -2,15 +2,16 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 from bitnet_simulator.physical_layer.carrier import ask_demodulate, fsk_demodulate, qam_demodulate
+from bitnet_simulator.physical_layer.baseband import nrz_polar_demodulate, manchester_demodulate, bipolar_demodulate
 import matplotlib.pyplot as plt
 
 class Receiver(Gtk.Window):
     def __init__(self):
         super().__init__(title="Receiver - BitNet")
         self.set_border_width(10)
-        self.set_default_size(400, 300)
+        self.set_default_size(400, 400)
 
-        # principal layout
+        # layout principal
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.add(vbox)
 
@@ -24,15 +25,16 @@ class Receiver(Gtk.Window):
         self.modulation_combo.append_text("ASK")
         self.modulation_combo.append_text("FSK")
         self.modulation_combo.append_text("8-QAM")
+        self.modulation_combo.append_text("NRZ-Polar")
+        self.modulation_combo.append_text("Manchester")
+        self.modulation_combo.append_text("Bipolar")
         self.modulation_combo.set_active(0)
         vbox.pack_start(self.modulation_combo, False, False, 0)
 
-        # demodulate signal button
         demodulate_button = Gtk.Button(label="Demodulate Signal")
         demodulate_button.connect("clicked", self.on_demodulate_signal)
         vbox.pack_start(demodulate_button, False, False, 0)
 
-        # result label
         self.result_label = Gtk.Label(label="Demodulated bits will appear here.")
         vbox.pack_start(self.result_label, False, False, 0)
 
@@ -43,18 +45,22 @@ class Receiver(Gtk.Window):
         try:
             signal = [float(x) for x in signal_text.strip("[]").split(",")]
 
-            if modulation == "ASK":
-                bits = ask_demodulate(signal, threshold=0.5, samples_per_bit=100)
+            if modulation == "NRZ-Polar":
+                bits = nrz_polar_demodulate(signal)
+            elif modulation == "Manchester":
+                bits = manchester_demodulate(signal)
+            elif modulation == "Bipolar":
+                bits = bipolar_demodulate(signal)
+            elif modulation == "ASK":
+                bits = ask_demodulate(signal)
             elif modulation == "FSK":
-                bits = fsk_demodulate(signal, freq0=1, freq1=2, samples_per_bit=100, sampling_rate=100)
+                bits = fsk_demodulate(signal)
             elif modulation == "8-QAM":
-                bits = qam_demodulate(signal, samples_per_bit=100)
+                bits = qam_demodulate(signal)
             else:
                 raise ValueError("Invalid modulation type.")
 
             self.result_label.set_text(f"Demodulated Bits: {bits}")
-
-            self.plot_bits(bits)
 
         except Exception as e:
             self.show_error(str(e))

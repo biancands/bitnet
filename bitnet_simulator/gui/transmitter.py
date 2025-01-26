@@ -2,13 +2,14 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
 from bitnet_simulator.physical_layer.carrier import ask, fsk, qam
+from bitnet_simulator.physical_layer.baseband import nrz_polar, manchester, bipolar
 import matplotlib.pyplot as plt
 
 class Transmitter(Gtk.Window):
     def __init__(self):
         super().__init__(title="Transmitter - BitNet")
         self.set_border_width(10)
-        self.set_default_size(400, 300)
+        self.set_default_size(400, 400)
 
         # layout principal
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -24,15 +25,17 @@ class Transmitter(Gtk.Window):
         self.modulation_combo.append_text("ASK")
         self.modulation_combo.append_text("FSK")
         self.modulation_combo.append_text("8-QAM")
+        self.modulation_combo.append_text("NRZ-Polar")
+        self.modulation_combo.append_text("Manchester")
+        self.modulation_combo.append_text("Bipolar")
         self.modulation_combo.set_active(0)
         vbox.pack_start(self.modulation_combo, False, False, 0)
 
-        # gereate signal button
+        # generate signal button
         generate_button = Gtk.Button(label="Generate Signal")
         generate_button.connect("clicked", self.on_generate_signal)
         vbox.pack_start(generate_button, False, False, 0)
 
-        # plot signal text view
         self.signal_display = Gtk.TextView()
         self.signal_display.set_editable(False)
         self.signal_display.set_wrap_mode(Gtk.WrapMode.WORD)
@@ -50,12 +53,19 @@ class Transmitter(Gtk.Window):
 
         try:
             bits_list = [int(b) for b in bits]
+
             if modulation == "ASK":
                 signal = ask(bits_list)
             elif modulation == "FSK":
                 signal = fsk(bits_list)
             elif modulation == "8-QAM":
                 signal = qam(bits_list)
+            elif modulation == "NRZ-Polar":
+                signal = nrz_polar(bits_list)
+            elif modulation == "Manchester":
+                signal = manchester(bits_list)
+            elif modulation == "Bipolar":
+                signal = bipolar(bits_list)
             else:
                 raise ValueError("Invalid modulation type.")
 
