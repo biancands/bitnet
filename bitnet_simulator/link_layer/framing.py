@@ -79,13 +79,13 @@ def deframe_byte_insertion_to_text(data):
     frames = deframe_byte_insertion(data)
     return ' '.join(frames)
 
-text = "Hello my friend"
-framed = count_character_framing_from_text(text)
-framed2 = byte_insertion_framing_from_text(text)
-print("Framed Binary CC:", framed)
-print("Framed Binary BI:", framed2)
+#text = "Hello my friend"
+#framed = count_character_framing_from_text(text)
+#framed2 = byte_insertion_framing_from_text(text)
+#print("Framed Binary CC:", framed)
+#print("Framed Binary BI:", framed2)
 
-original_text = deframe_count_character_to_text(framed)
-original_text2 = deframe_byte_insertion_to_text(framed2)
-print("Original Text CC:", original_text)
-print("Original Text BI:", original_text2)
+#original_text = deframe_count_character_to_text(framed)
+#original_text2 = deframe_byte_insertion_to_text(framed2)
+#print("Original Text CC:", original_text)
+#print("Original Text BI:", original_text2)
